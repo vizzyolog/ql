@@ -59,7 +59,7 @@ func doStart() string {
 	return "start"
 }
 
-func doLeft(inv []string) ([]string, string) {
+func doLeft(inv []string) []string {
 	fmt.Println("Комната с сундуком. 1 - открыть, 2 - вернуться")
 	answer := ask()
 	if answer == "1" {
@@ -72,7 +72,7 @@ func doLeft(inv []string) ([]string, string) {
 			fmt.Println("Ты нашёл меч!")
 		}
 	}
-	return inv, "start"
+	return inv
 }
 
 func doRight() string {
@@ -87,69 +87,67 @@ func doRight() string {
 	return "right"
 }
 
-// Один ход боя. Возвращает обновлённое состояние и room: "fight" или "end".
-func doFightTurn(playerHP int, monsterHP int, inv []string) (int, int, []string, string) {
-	showStatus(playerHP, monsterHP, inv)
-	fmt.Println("1 - ударить, 2 - лечиться, 3 - сдаться")
-	cmd := ask()
+// Весь бой до победы или поражения. HP живут внутри функции.
+func doFight(inv []string) []string {
+	playerHP := 20
+	monsterHP := 15
 
-	switch cmd {
-	case "1":
-		damage := 5
-		if hasItem(inv, "меч") {
-			damage = 8
-			fmt.Println("Удар мечом! Урон:", damage)
-		} else {
-			fmt.Println("Удар кулаком! Урон:", damage)
-		}
-		monsterHP = hit(monsterHP, damage)
+	for playerHP > 0 && monsterHP > 0 {
+		showStatus(playerHP, monsterHP, inv)
+		fmt.Println("1 - ударить, 2 - лечиться, 3 - сдаться")
+		cmd := ask()
 
-		monsterDamage := rand.Intn(4) + 1
-		playerHP = hit(playerHP, monsterDamage)
-		fmt.Println("Дракон ответил! Урон:", monsterDamage)
-	case "2":
-		if hasItem(inv, "зелье") {
-			inv = removeItem(inv, "зелье")
-			playerHP = playerHP + 8
-			fmt.Println("Выпил зелье! Теперь у тебя", playerHP, "HP.")
-		} else {
-			fmt.Println("Зелий нет.")
+		switch cmd {
+		case "1":
+			damage := 5
+			if hasItem(inv, "меч") {
+				damage = 8
+				fmt.Println("Удар мечом! Урон:", damage)
+			} else {
+				fmt.Println("Удар кулаком! Урон:", damage)
+			}
+			monsterHP = hit(monsterHP, damage)
+
+			monsterDamage := rand.Intn(4) + 1
+			playerHP = hit(playerHP, monsterDamage)
+			fmt.Println("Дракон ответил! Урон:", monsterDamage)
+		case "2":
+			if hasItem(inv, "зелье") {
+				inv = removeItem(inv, "зелье")
+				playerHP = playerHP + 8
+				fmt.Println("Выпил зелье! Теперь у тебя", playerHP, "HP.")
+			} else {
+				fmt.Println("Зелий нет.")
+			}
+		case "3":
+			playerHP = 0
 		}
-	case "3":
-		playerHP = 0
 	}
 
-	if playerHP <= 0 {
-		fmt.Println("Поражение.")
-		return playerHP, monsterHP, inv, "end"
-	}
-	if monsterHP <= 0 {
+	if playerHP > 0 {
 		fmt.Println("Победа над драконом!")
-		return playerHP, monsterHP, inv, "end"
+	} else {
+		fmt.Println("Поражение.")
 	}
-	return playerHP, monsterHP, inv, "fight"
+	return inv
 }
 
 func main() {
 	room := "start"
 	inventory := []string{}
-	playerHP := 20
-	monsterHP := 15
 
 	for room != "end" {
 		switch room {
 		case "start":
 			room = doStart()
 		case "left":
-			inventory, room = doLeft(inventory)
+			inventory = doLeft(inventory)
+			room = "start"
 		case "right":
 			room = doRight()
-			if room == "fight" {
-				playerHP = 20
-				monsterHP = 15
-			}
 		case "fight":
-			playerHP, monsterHP, inventory, room = doFightTurn(playerHP, monsterHP, inventory)
+			inventory = doFight(inventory)
+			room = "end"
 		}
 	}
 
