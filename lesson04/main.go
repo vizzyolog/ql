@@ -87,7 +87,6 @@ func doRight() string {
 	return "right"
 }
 
-// Бой с новым драконом. HP игрока приходят снаружи и возвращаются назад.
 func doFight(playerHP int, inv []string) (int, []string) {
 	monsterHP := 15
 
