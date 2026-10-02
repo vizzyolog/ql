@@ -87,9 +87,8 @@ func doRight() string {
 	return "right"
 }
 
-// Весь бой до победы или поражения. HP живут внутри функции.
-func doFight(inv []string) []string {
-	playerHP := 20
+// Бой с новым драконом. HP игрока приходят снаружи и возвращаются назад.
+func doFight(playerHP int, inv []string) (int, []string) {
 	monsterHP := 15
 
 	for playerHP > 0 && monsterHP > 0 {
@@ -129,12 +128,13 @@ func doFight(inv []string) []string {
 	} else {
 		fmt.Println("Поражение.")
 	}
-	return inv
+	return playerHP, inv
 }
 
 func main() {
 	room := "start"
 	inventory := []string{}
+	playerHP := 20
 
 	for room != "end" {
 		switch room {
@@ -146,10 +146,14 @@ func main() {
 		case "right":
 			room = doRight()
 		case "fight":
-			inventory = doFight(inventory)
-			room = "end"
+			playerHP, inventory = doFight(playerHP, inventory)
+			if playerHP > 0 {
+				room = "start"
+			} else {
+				room = "end"
+			}
 		}
 	}
 
-	fmt.Println("Игра окончена. Инвентарь:", inventory)
+	fmt.Println("Игра окончена. HP:", playerHP, "Инвентарь:", inventory)
 }
