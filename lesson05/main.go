@@ -18,20 +18,11 @@ type Monster struct {
 	Damage [2]int // минимум и максимум урона
 }
 
-type Save struct {
-	Player Player
-	Room   string
-}
-
 func (p *Player) hit(damage int) {
 	p.HP -= damage
 	if p.HP < 0 {
 		p.HP = 0
 	}
-}
-
-func (p *Player) heal(amount int) {
-	p.HP += amount
 }
 
 func (p *Player) hasItem(name string) bool {
@@ -62,6 +53,13 @@ func (p *Player) removeItem(name string) {
 	p.Inventory = result
 }
 
+func (m *Monster) hit(damage int) {
+	m.HP -= damage
+	if m.HP < 0 {
+		m.HP = 0
+	}
+}
+
 func (m Monster) attack() int {
 	return rand.Intn(m.Damage[1]-m.Damage[0]+1) + m.Damage[0]
 }
@@ -73,8 +71,8 @@ func ask() string {
 	return answer
 }
 
-func saveGame(p *Player, room string) {
-	data, err := json.MarshalIndent(Save{Player: *p, Room: room}, "", "  ")
+func saveGame(p *Player) {
+	data, err := json.MarshalIndent(p, "", "  ")
 	if err != nil {
 		fmt.Println("Не удалось преобразовать сохранение:", err)
 		return
@@ -87,23 +85,22 @@ func saveGame(p *Player, room string) {
 	fmt.Println("Игра сохранена.")
 }
 
-func loadGame() (*Player, string, bool) {
+func loadGame() *Player {
 	data, err := os.ReadFile("save.json")
 	if err != nil {
 		fmt.Println("Файл сохранения не найден.")
-		return nil, "", false
+		return nil
 	}
 
-	s := Save{}
-	err = json.Unmarshal(data, &s)
-	if err != nil || s.Player.HP < 0 {
+	p := &Player{}
+	err = json.Unmarshal(data, p)
+	if err != nil || p.HP < 0 {
 		fmt.Println("Файл сохранения повреждён.")
-		return nil, "", false
+		return nil
 	}
 
-	p := &s.Player
 	fmt.Println("Сохранение загружено. HP:", p.HP, "Инвентарь:", p.Inventory)
-	return p, s.Room, true
+	return p
 }
 
 func doStart() string {
@@ -169,10 +166,7 @@ func doFight(p *Player) {
 			} else {
 				fmt.Println("Удар кулаком! Урон:", damage)
 			}
-			dragon.HP -= damage
-			if dragon.HP < 0 {
-				dragon.HP = 0
-			}
+			dragon.hit(damage)
 
 			monsterDamage := dragon.attack()
 			p.hit(monsterDamage)
@@ -180,7 +174,7 @@ func doFight(p *Player) {
 		case "2":
 			if p.hasItem("зелье") {
 				p.removeItem("зелье")
-				p.heal(8)
+				p.HP += 8
 				fmt.Println("Выпил зелье! Теперь у тебя", p.HP, "HP.")
 			} else {
 				fmt.Println("Зелий нет.")
@@ -197,25 +191,15 @@ func doFight(p *Player) {
 	}
 }
 
-func newGame() *Player {
-	return &Player{HP: 20, Inventory: []string{}}
-}
-
 func main() {
 	room := "start"
-	var player *Player
+	player := &Player{HP: 20}
 
 	fmt.Println("1 - новая игра, 2 - продолжить")
 	if ask() == "2" {
-		p, savedRoom, ok := loadGame()
-		if ok {
-			player = p
-			room = savedRoom
-		} else {
-			player = newGame()
+		if saved := loadGame(); saved != nil {
+			player = saved
 		}
-	} else {
-		player = newGame()
 	}
 
 	for room != "end" {
@@ -223,7 +207,7 @@ func main() {
 		case "start":
 			room = doStart()
 		case "save":
-			saveGame(player, "start")
+			saveGame(player)
 			room = "start"
 		case "left":
 			doLeft(player)
