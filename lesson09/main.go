@@ -28,27 +28,28 @@ func (h *Hero) fight(monsterName string, monsterHP int, result chan string) {
 }
 
 func main() {
-	// Каждый бой — это пара: кто дерётся и с кем.
-	// Один срез вместо двух — и никаких индексов.
-	type Battle struct {
-		hero      Hero
-		monster   string
-		monsterHP int
+	heroes := []Hero{
+		{Name: "Алёша", HP: 20, Damage: 5},
+		{Name: "Олег", HP: 25, Damage: 3},
+		{Name: "Маша", HP: 18, Damage: 6},
 	}
 
-	battles := []Battle{
-		{hero: Hero{Name: "Алёша", HP: 20, Damage: 5}, monster: "гоблин", monsterHP: 10},
-		{hero: Hero{Name: "Олег", HP: 25, Damage: 3}, monster: "дракон", monsterHP: 20},
-		{hero: Hero{Name: "Маша", HP: 18, Damage: 6}, monster: "тролль", monsterHP: 15},
+	monsters := []struct {
+		name string
+		hp   int
+	}{
+		{"гоблин", 10},
+		{"дракон", 20},
+		{"тролль", 15},
 	}
 
-	// Буфер — от len(battles): отправка никогда не ждёт читателя.
-	result := make(chan string, len(battles))
+	// Буфер — от len(heroes), как в lesson08: отправка никогда не ждёт читателя.
+	result := make(chan string, len(heroes))
 
 	// Три настоящие горутины: все бои идут ПАРАЛЛЕЛЬНО.
-	// Перебираем бои напрямую — без всяких индексов.
-	for _, battle := range battles {
-		go battle.hero.fight(battle.monster, battle.monsterHP, result)
+	// heroes[i] дерётся с monsters[i]: первый с первым, второй со вторым.
+	for i := range heroes {
+		go heroes[i].fight(monsters[i].name, monsters[i].hp, result)
 	}
 
 	// Будильник: если за 10 секунд все не закончат — отменяем гонку.
@@ -59,7 +60,7 @@ func main() {
 	// Какой канал пришлёт первым — та ветка и выполнится.
 	// Побеждает тот, чьё сообщение пришло первым — но мы дослушаем всех.
 	finished := 0
-	for finished < len(battles) {
+	for finished < len(heroes) {
 		select {
 		case msg := <-result:
 			finished++
