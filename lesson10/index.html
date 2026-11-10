@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тайна заброшенного замка</title>
+
+    <style>
+        /* CSS отвечает за внешний вид: цвета, размеры и расположение. */
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+            color: white;
+            background: linear-gradient(135deg, #111827, #312e81);
+        }
+
+        /* Класс позволяет оформить сразу все элементы с таким именем. */
+        .game-menu {
+            width: 90%;
+            max-width: 420px;
+            padding: 32px;
+            text-align: center;
+            background: #17203a;
+            border: 2px solid #818cf8;
+            border-radius: 24px;
+            box-shadow: 0 20px 50px #00000080;
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #fcd34d;
+        }
+
+        .subtitle {
+            color: #c7d2fe;
+        }
+
+        .hero-card {
+            margin: 24px 0;
+            padding: 24px;
+            background: #222f51;
+            border-radius: 16px;
+        }
+
+        .avatar {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            background: #4f46e5;
+            border: 3px solid #a5b4fc;
+            border-radius: 50%;
+        }
+
+        .hp-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        /* Тёмная полоса — вся шкала здоровья. */
+        .hp-bar {
+            height: 20px;
+            overflow: hidden;
+            background: #0f172a;
+            border-radius: 10px;
+        }
+
+        /* Зелёная часть занимает 75%: у героя осталось 15 из 20 HP. */
+        .hp {
+            width: 75%;
+            height: 100%;
+            background: #22c55e;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 12px;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #17203a;
+            background: #fcd34d;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        /* :hover срабатывает, когда указатель находится над кнопкой. */
+        button:hover {
+            transform: scale(1.03);
+            background: #fde68a;
+        }
+
+        .secondary {
+            color: white;
+            background: #4f46e5;
+        }
+
+        .secondary:hover {
+            background: #6366f1;
+        }
+
+        .note {
+            margin-bottom: 0;
+            font-size: 14px;
+            color: #a5b4fc;
+        }
+    </style>
+</head>
+<body>
+    <!-- HTML отвечает за содержание: заголовки, текст и кнопки. -->
+    <main class="game-menu">
+        <h1>Тайна заброшенного замка</h1>
+        <p class="subtitle">Приключение начинается здесь</p>
+
+        <section class="hero-card">
+            <div class="avatar">А</div>
+            <h2>Алёша</h2>
+            <p>Уровень: 1</p>
+
+            <div class="hp-label">
+                <span>Здоровье</span>
+                <span>15 / 20</span>
+            </div>
+            <div class="hp-bar">
+                <div class="hp"></div>
+            </div>
+
+            <!-- JavaScript добавим на следующем уроке. -->
+            <button type="button">Начать игру</button>
+            <button type="button" class="secondary">Продолжить</button>
+        </section>
+
+        <p class="note">Выбери героя и отправляйся навстречу приключениям!</p>
+    </main>
+</body>
+</html>
+
+<!--
+Маленькая практика:
+1. Придумайте своё название игры, имя героя и цвета оформления.
+2. Измените ширину .hp на 50% и обновите число HP на экране.
+3. Добавьте в карточку список из трёх предметов инвентаря.
+4. Усложнение: создайте вторую карточку с монстром и его здоровьем.
+-->
