@@ -110,6 +110,12 @@
             background: #6366f1;
         }
 
+        .message {
+            min-height: 24px;
+            color: #86efac;
+            font-weight: bold;
+        }
+
         .note {
             margin-bottom: 0;
             font-size: 14px;
@@ -136,13 +142,30 @@
                 <div class="hp"></div>
             </div>
 
-            <!-- JavaScript добавим на следующем уроке. -->
-            <button type="button">Начать игру</button>
+            <button type="button" id="start-button">Начать игру</button>
             <button type="button" class="secondary">Продолжить</button>
+            <p class="message" id="message" aria-live="polite"></p>
         </section>
 
         <p class="note">Выбери героя и отправляйся навстречу приключениям!</p>
     </main>
+
+    <script>
+        // querySelector находит элементы по id, а addEventListener ждёт нажатия.
+        const startButton = document.querySelector("#start-button");
+        const message = document.querySelector("#message");
+
+        startButton.addEventListener("click", async () => {
+            // fetch отправляет POST-запрос на тот же сервер, который отдал страницу.
+            const response = await fetch("/start", {
+                method: "POST",
+                body: "Алёша"
+            });
+
+            // Ждём текст ответа и показываем его на странице без перезагрузки.
+            message.textContent = await response.text();
+        });
+    </script>
 </body>
 </html>
 
@@ -151,5 +174,6 @@
 1. Придумайте своё название игры, имя героя и цвета оформления.
 2. Измените ширину .hp на 50% и обновите число HP на экране.
 3. Добавьте в карточку список из трёх предметов инвентаря.
-4. Усложнение: создайте вторую карточку с монстром и его здоровьем.
+4. Измените имя в body запроса и посмотрите на ответ сервера.
+5. Усложнение: создайте вторую карточку с монстром и его здоровьем.
 -->
