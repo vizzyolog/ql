@@ -11,6 +11,7 @@ import (
 type Player struct {
 	Name      string
 	HP        int
+	Gold      int
 	Inventory []string
 }
 
@@ -21,6 +22,7 @@ func game(w http.ResponseWriter, r *http.Request) {
 	player := Player{
 		Name:      "Алёша",
 		HP:        15,
+		Gold:      100,
 		Inventory: []string{"Меч", "Зелье", "Щит"},
 	}
 
