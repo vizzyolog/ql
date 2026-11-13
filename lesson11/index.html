@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тайна заброшенного замка</title>
+
+    <style>
+        /* CSS отвечает за внешний вид: цвета, размеры и расположение. */
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+            color: white;
+            background: linear-gradient(135deg, #111827, #312e81);
+        }
+
+        /* Класс позволяет оформить сразу все элементы с таким именем. */
+        .game-menu {
+            width: 90%;
+            max-width: 420px;
+            padding: 32px;
+            text-align: center;
+            background: #17203a;
+            border: 2px solid #818cf8;
+            border-radius: 24px;
+            box-shadow: 0 20px 50px #00000080;
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #fcd34d;
+        }
+
+        .subtitle {
+            color: #c7d2fe;
+        }
+
+        .hero-card {
+            margin: 24px 0;
+            padding: 24px;
+            background: #222f51;
+            border-radius: 16px;
+        }
+
+        .avatar {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            background: #4f46e5;
+            border: 3px solid #a5b4fc;
+            border-radius: 50%;
+        }
+
+        .hp-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        /* Тёмная полоса — вся шкала здоровья. */
+        .hp-bar {
+            height: 20px;
+            overflow: hidden;
+            background: #0f172a;
+            border-radius: 10px;
+        }
+
+        /* Зелёная часть занимает 75%: у героя осталось 15 из 20 HP. */
+        .hp {
+            width: 75%;
+            height: 100%;
+            background: #22c55e;
+        }
+
+        .inventory {
+            display: flex;
+            gap: 8px;
+            margin: 16px 0;
+        }
+
+        .item {
+            flex: 1;
+            padding: 12px 4px;
+            font-size: 14px;
+            background: #17203a;
+            border: 1px solid #818cf8;
+            border-radius: 8px;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 12px;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #17203a;
+            background: #fcd34d;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        /* :hover срабатывает, когда указатель находится над кнопкой. */
+        button:hover {
+            transform: scale(1.03);
+            background: #fde68a;
+        }
+
+        .secondary {
+            color: white;
+            background: #4f46e5;
+        }
+
+        .secondary:hover {
+            background: #6366f1;
+        }
+
+        .message {
+            min-height: 24px;
+            color: #86efac;
+            font-weight: bold;
+        }
+
+        .note {
+            margin-bottom: 0;
+            font-size: 14px;
+            color: #a5b4fc;
+        }
+    </style>
+</head>
+<body>
+    <!-- Двойные фигурные скобки показывают, куда Go подставит данные. -->
+    <main class="game-menu">
+        <h1>Тайна заброшенного замка</h1>
+        <p class="subtitle">Приключение начинается здесь</p>
+
+        <section class="hero-card">
+            <div class="avatar">А</div>
+            <h2>{{.Name}}</h2>
+            <p>Уровень: 1</p>
+
+            <div class="hp-label">
+                <span>Здоровье</span>
+                <span>{{.HP}} / 20</span>
+            </div>
+            <div class="hp-bar">
+                <div class="hp"></div>
+            </div>
+
+            <div class="inventory">
+                <!-- range повторяет карточку для каждого предмета из среза. -->
+                {{range .Inventory}}
+                    <div class="item">{{.}}</div>
+                {{end}}
+            </div>
+
+            <button type="button" id="start-button">Начать игру</button>
+            <button type="button" class="secondary">Продолжить</button>
+            <p class="message" id="message" aria-live="polite"></p>
+        </section>
+
+        <p class="note">Выбери героя и отправляйся навстречу приключениям!</p>
+    </main>
+
+    <script>
+        // querySelector находит элементы по id, а addEventListener ждёт нажатия.
+        const startButton = document.querySelector("#start-button");
+        const message = document.querySelector("#message");
+
+        startButton.addEventListener("click", async () => {
+            // fetch отправляет POST-запрос на тот же сервер, который отдал страницу.
+            const response = await fetch("/start", {
+                method: "POST",
+                body: "Алёша"
+            });
+
+            // Ждём текст ответа и показываем его на странице без перезагрузки.
+            message.textContent = await response.text();
+        });
+    </script>
+</body>
+</html>
+
+<!--
+Маленькая практика:
+1. Добавьте «Кольцо» в Inventory в main.go и перезапустите сервер.
+2. Измените имя и HP игрока в Go. За шириной полоски HP следите в CSS.
+3. Измените имя в body POST-запроса и посмотрите на ответ сервера.
+4. Усложнение: добавьте игроку поле Gold и выведите его через {{.Gold}}.
+-->
