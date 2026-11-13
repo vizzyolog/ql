@@ -27,7 +27,7 @@ func game(w http.ResponseWriter, r *http.Request) {
 	// Execute подставляет поля player в шаблон и отправляет HTML браузеру.
 	err := page.Execute(w, player)
 	if err != nil {
-		http.Error(w, "Не удалось показать страницу", http.StatusInternalServerError)
+		log.Printf("Ошибка Execute: %v", err)
 	}
 }
 
