@@ -53,7 +53,7 @@ func main() {
 	http.HandleFunc("/", game)
 	http.HandleFunc("/start", start)
 
-	fmt.Println("Открой в браузере: http://localhost:8080")
+	fmt.Println("Открой в браузере: http://127.0.0.1:8080")
 	log.Fatal(http.ListenAndServe("127.0.0.1:8080", nil))
 }
 
